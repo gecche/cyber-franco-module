@@ -1,0 +1,13 @@
+{
+    "name": "CyberFranco",
+    "alias": "cyber-franco",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\CyberFranco\\Providers\\FrancoServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
