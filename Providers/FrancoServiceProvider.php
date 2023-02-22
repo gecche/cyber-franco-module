@@ -7,8 +7,8 @@ use App\Observers\PdfRequestVerificationObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Routing\Router;
-use Modules\CyberFranco\Http\Middleware\PdfRequestHashUuid;
-use Modules\CyberFranco\Http\Middleware\ValidateApiFrancoRequest;
+use App\Http\Middleware\PdfRequestHashUuid;
+use App\Http\Middleware\ValidateApiFrancoRequest;
 
 class FrancoServiceProvider extends ServiceProvider
 {
@@ -117,10 +117,10 @@ class FrancoServiceProvider extends ServiceProvider
         ], 'app');
 
         //Publishing and overwriting public folders
-        $this->publishes([
-            __DIR__ . '/../public/admin/assets/css' => public_path('admin/assets/css'),
-            __DIR__ . '/../public/admin/pages' => public_path('admin/pages'),
-        ], 'public');
+//        $this->publishes([
+//            __DIR__ . '/../public/admin/assets/css' => public_path('admin/assets/css'),
+//            __DIR__ . '/../public/admin/pages' => public_path('admin/pages'),
+//        ], 'public');
     }
 
 

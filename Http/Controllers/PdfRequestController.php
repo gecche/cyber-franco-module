@@ -2,9 +2,6 @@
 
 namespace Modules\CyberFranco\Http\Controllers;
 
-use App\Http\Requests\StoreCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
-use App\Models\Customer;
 use App\Models\PdfRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

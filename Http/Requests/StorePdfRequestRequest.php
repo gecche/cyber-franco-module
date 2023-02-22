@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Http\Requests;
+namespace Modules\CyberFranco\Http\Requests;
 
 use App\Models\PdfRequest;
-use App\Models\MonitorType;
-use App\Rules\PdfRequestAssociations;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;

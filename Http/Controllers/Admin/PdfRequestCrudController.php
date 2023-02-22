@@ -4,10 +4,7 @@ namespace Modules\CyberFranco\Http\Controllers\Admin;
 
 use App\Http\Requests\StorePdfRequestRequest;
 use App\Jobs\PdfRequestCreate;
-use App\Models\Customer;
 use App\Models\PdfRequest;
-use App\Models\MonitorType;
-use App\Models\Profile;
 use App\Models\User;
 use App\Services\Cybercheck\CyberCheckApi;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
