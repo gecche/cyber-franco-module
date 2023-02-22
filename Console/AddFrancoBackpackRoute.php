@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\CyberFranco\Console\Commands;
+namespace Modules\CyberFranco\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
