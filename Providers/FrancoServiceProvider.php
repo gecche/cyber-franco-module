@@ -2,6 +2,8 @@
 
 namespace Modules\CyberFranco\Providers;
 
+use App\Models\PdfRequestVerification;
+use App\Observers\PdfRequestVerificationObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Routing\Router;
@@ -20,10 +22,11 @@ class FrancoServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
+        $this->registerMiddlewares();
+        $this->registerEvents();
         $this->registerFactories();
         $this->loadMigrationsFrom(module_path('CyberFranco', 'Database/Migrations'));
         $this->francoPublish();
-        $this->registerMiddlewares();
     }
 
 
@@ -109,7 +112,9 @@ class FrancoServiceProvider extends ServiceProvider
             __DIR__ . '/../app/Models' => app_path('Models'),
             __DIR__ . '/../app/Policies' => app_path('Policies'),
             __DIR__ . '/../app/Services' => app_path('Services'),
-        ], 'models');
+            __DIR__ . '/../app/Notifications' => app_path('Notifications'),
+            __DIR__ . '/../app/Observers' => app_path('Observers'),
+        ], 'app');
 
         //Publishing and overwriting public folders
         $this->publishes([
@@ -124,6 +129,12 @@ class FrancoServiceProvider extends ServiceProvider
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('pdf-uuid', PdfRequestHashUuid::class);
         $router->aliasMiddleware('validate-api-franco', ValidateApiFrancoRequest::class);
+
+    }
+
+    public function registerEvents() {
+
+        PdfRequestVerification::observe(PdfRequestVerificationObserver::class);
 
     }
     /**

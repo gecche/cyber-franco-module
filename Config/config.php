@@ -8,4 +8,5 @@ return [
     ],
 
     'model_name' => \App\Models\PdfRequest::class,
+    'has_backpack' => false,
 ];

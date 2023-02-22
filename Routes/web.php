@@ -46,7 +46,7 @@ Route::middleware(['validate-api-franco'])->name('pdf-request.')
 
     });
 
-if (config('pdf-request.hasBackpack')) {
+if (config('pdf-request.has_backpack')) {
     Route::group([
         'prefix' => config('backpack.base.route_prefix', 'admin'),
         'middleware' => array_merge(
