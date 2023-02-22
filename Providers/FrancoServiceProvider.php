@@ -114,6 +114,10 @@ class FrancoServiceProvider extends ServiceProvider
             __DIR__ . '/../app/Services' => app_path('Services'),
             __DIR__ . '/../app/Notifications' => app_path('Notifications'),
             __DIR__ . '/../app/Observers' => app_path('Observers'),
+            __DIR__ . '/../app/Http/Controllers' => app_path('Http/Controllers'),
+            __DIR__ . '/../app/Http/Controllers/Admin' => app_path('Http/Controllers/Admin'),
+            __DIR__ . '/../app/Http/Middleware' => app_path('Http/Middleware'),
+            __DIR__ . '/../app/Http/Requests' => app_path('Http/Requests'),
         ], 'app');
 
         //Publishing and overwriting public folders
