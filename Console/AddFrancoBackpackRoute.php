@@ -38,7 +38,7 @@ class AddFrancoBackpackRoute extends Command
      */
     public function handle()
     {
-        Artisan::call('backpack:add-custom-route',['code' => "Route::crud('pdf-request', 'PdfRequestCrudController')"]);
+        Artisan::call('backpack:add-custom-route',['code' => "Route::crud('pdf-request', 'PdfRequestCrudController');"]);
         $this->comment("Pdf Request Backpack toure added successfully");
     }
 }
