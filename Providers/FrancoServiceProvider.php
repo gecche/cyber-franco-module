@@ -134,7 +134,9 @@ class FrancoServiceProvider extends ServiceProvider
 
     public function registerEvents() {
 
-        PdfRequestVerification::observe(PdfRequestVerificationObserver::class);
+        if (class_exists(PdfRequestVerification::class)) {
+            PdfRequestVerification::observe(PdfRequestVerificationObserver::class);
+        }
 
     }
     /**
