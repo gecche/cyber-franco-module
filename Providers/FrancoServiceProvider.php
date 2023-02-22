@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Routing\Router;
 use App\Http\Middleware\PdfRequestHashUuid;
 use App\Http\Middleware\ValidateApiFrancoRequest;
+use Modules\CyberFranco\Console\AddFrancoBackpackRoute;
 
 class FrancoServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,7 @@ class FrancoServiceProvider extends ServiceProvider
         $this->registerMiddlewares();
         $this->registerEvents();
         $this->registerFactories();
+        $this->registercommands();
         $this->loadMigrationsFrom(module_path('CyberFranco', 'Database/Migrations'));
         $this->francoPublish();
     }
@@ -142,6 +144,14 @@ class FrancoServiceProvider extends ServiceProvider
             PdfRequestVerification::observe(PdfRequestVerificationObserver::class);
         }
 
+    }
+
+    public function registerCommands() {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                AddFrancoBackpackRoute::class,
+            ]);
+        }
     }
     /**
      * Get the services provided by the provider.
