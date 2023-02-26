@@ -9,7 +9,8 @@
         }
     ],
     "require": {
-        "webpatser/laravel-uuid": "^4.0"
+        "webpatser/laravel-uuid": "^4.0",
+        "gecche/laravel-fsm-model": "dev-main"
     },
     "extra": {
         "laravel": {
