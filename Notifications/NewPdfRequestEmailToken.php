@@ -31,7 +31,7 @@ class NewPdfRequestEmailToken extends Notification
     public function __construct($pdfRequestVerification)
     {
         $this->token = $pdfRequestVerification->token;
-        $this->item = $pdfRequestVerification->item;
+        $this->item = $pdfRequestVerification->pdfRequest->item;
 
         $this->ip = request()->ip();
         $this->ua = request()->userAgent();
