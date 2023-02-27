@@ -18,7 +18,7 @@ class NewPdfRequestEmailToken extends Notification
     use Queueable;
 
     private $token;
-    private $userId;
+    protected $item;
 
     private $ip;
     private $ua;
@@ -31,7 +31,7 @@ class NewPdfRequestEmailToken extends Notification
     public function __construct($pdfRequestVerification)
     {
         $this->token = $pdfRequestVerification->token;
-        $this->userId = $pdfRequestVerification->pdfRequestItem->user_id;
+        $this->item = $pdfRequestVerification->item;
 
         $this->ip = request()->ip();
         $this->ua = request()->userAgent();
@@ -56,23 +56,26 @@ class NewPdfRequestEmailToken extends Notification
      */
     public function toMail($notifiable)
     {
-        $user = Auth::user();
-        if ($this->userId) {
-            $user = User::find($this->userId);
-        }
-        $footer = $this->getFooter($user);
-        $logo = $this->getLogo($user);
-        $trackingPixel = $this->getTrackingPixel($user);
+        $footer = $this->getFooter();
+        $logo = $this->getLogo();
+        $trackingPixel = $this->getTrackingPixel();
 
+        $markdownData = [
+            'logo' => $logo,
+            'footer' => $footer
+        ];
+        if ($trackingPixel) {
+            $markdownData['trackingPixel'] = $trackingPixel;
+        }
         return (new MailMessage)
-            ->subject(Lang::get('notification.verify-message.subject'))
-            ->line(Lang::get('notification.verify-message.line_1'))
+            ->subject(Lang::get('franco::notification.verify-pdf-request.subject',['item' => $this->item]))
+            ->line(Lang::get('franco::notification.verify-pdf-request.line_1'))
             ->line(new HtmlString('<div class="info-block"><p>'. $this->token .'</p></div>'))
-            ->line(Lang::get('notification.verify-message.line_2'))
+            ->line(Lang::get('franco::notification.verify-pdf-request.line_2'))
             ->line(new HtmlString('<br>'))
-            ->line('This request was sent from '. $this->getIp() .' using '. $this->getBrowsers($this->ua) .' on '. $this->getOs($this->ua) ." from $user->email. If you didnt ask for it, you can safely ignore this message: no data about your email will be shared with anyone.")
-            ->line(new HtmlString(Lang::get('notification.verify-message.contacts')))
-            ->markdown("notifications::email", ['logo' => $logo, 'trackingPixel' => $trackingPixel, 'footer' => $footer]);
+            ->line('This request was sent from '. $this->getIp() .' using '. $this->getBrowsers($this->ua) .' on '. $this->getOs($this->ua) .". If you didnt ask for it, you can safely ignore this message: no data about your email will be shared with anyone.")
+            ->line(new HtmlString(Lang::get('franco::notification.verify-pdf-request.contacts')))
+            ->markdown("notifications::email", $markdownData);
     }
 
     /**
@@ -102,31 +105,33 @@ class NewPdfRequestEmailToken extends Notification
         return request()->ip(); // it will return server ip when no client ip found
     }
 
-    private function getLogo($user)
+    private function getLogo($user = null)
     {
-        $reseller = $user->customer->reseller;
-        if ($reseller->logo) {
-            $disk = config('filesystems.default');
-            $url = Storage::disk($disk)->url($reseller->logo);
-            return $url;
-        }
+//        $reseller = $user->customer->reseller;
+//        if ($reseller->logo) {
+//            $disk = config('filesystems.default');
+//            $url = Storage::disk($disk)->url($reseller->logo);
+//            return $url;
+//        }
         return null;
     }
 
-    private function getTrackingPixel($notifiable)
+    private function getTrackingPixel($user = null)
     {
-        $pixelEventName = config('tracking.mixpanel.events.open-new-hits-email');
-        $extraProps = [
-            "user-id" => $notifiable->id,
-        ];
-        $trackingPixel = MixPanel::createPixel($pixelEventName, $extraProps);
-        return $trackingPixel;
+        return null;
+//        $pixelEventName = config('tracking.mixpanel.events.open-new-hits-email');
+//        $extraProps = [
+//            "user-id" => $notifiable->id,
+//        ];
+//        $trackingPixel = MixPanel::createPixel($pixelEventName, $extraProps);
+//        return $trackingPixel;
     }
 
-    private function getFooter($user)
+    private function getFooter($user = null)
     {
-        $reseller = $user->reseller;
-        return ($reseller && $reseller->footer) ? $reseller->footer : null;
+        return null;
+//        $reseller = $user->reseller;
+//        return ($reseller && $reseller->footer) ? $reseller->footer : null;
     }
 
     public static function getOs($user_agent){

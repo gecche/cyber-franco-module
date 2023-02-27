@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Config;
 use Webpatser\Uuid\Uuid;
 use App\Models\User;
+use App\Models\PdfRequestVerification;
 
 /**
  */
@@ -116,7 +117,7 @@ class PdfRequest extends Model
     {
         if ($this->type == 'email') {
             $verification = $this->verification()->create([
-                'token' => MonitorVerification::makeToken()
+                'token' => PdfRequestVerification::makeToken()
             ]);
         } else {
             $this->verified = true;
@@ -127,19 +128,6 @@ class PdfRequest extends Model
         return $verification;
     }
 
-    /**
-     * Scope a query to only include active items of a customers.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param Customer $customer
-     * @return void
-     */
-    public function scopeCustomerList($query, Customer $customer)
-    {
-        $query->where('customer_id', $customer->getKey())
-            ->active()
-            ->verified();
-    }
 
     public function getItemUserAttribute($value)
     {
@@ -164,6 +152,10 @@ class PdfRequest extends Model
             return $this->email;
         }
         return $this->user ? $this->user->name : '--';
+    }
+
+    public function needsVerification() {
+        return $this->source !== 'internal';
     }
 
     public function save(array $options = [])
