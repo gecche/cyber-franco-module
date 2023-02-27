@@ -272,7 +272,12 @@ class PdfRequestCrudController extends CrudController
             'default' => true,
             'hint' => 'Already Verified item',
         ]);
-//        $this->crud->addField('profiles');
+        $this->crud->addField([
+            'name' => 'backpack',
+            'type' => 'hidden',
+            'value' => '1',
+        ]);
+        //        $this->crud->addField('profiles');
 
     }
 

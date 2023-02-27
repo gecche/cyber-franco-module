@@ -26,8 +26,8 @@ return new class extends Migration
             $table->enum('status',[
                 'created','verification_expired','in_progress',
                 'done','failed','rejected','expired'
-            ])->default('created');
-            $table->json('history')->nullable();
+            ])->nullable();
+            $table->json('status_history')->default("[]");
             $table->string('filename')->nullable();
             $table->boolean('verified')->default(0);
             $table->boolean('active')->default(1);

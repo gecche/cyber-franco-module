@@ -56,6 +56,14 @@ class FrancoServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             module_path('CyberFranco', 'Config/config.php'), 'pdf_request'
         );
+
+        $this->publishes([
+            module_path('CyberFranco', 'Config/fsm-pdfrequest.php') => config_path('fsm.php'),
+        ], 'config');
+        $this->mergeConfigFrom(
+            module_path('CyberFranco', 'Config/fsm-pdfrequest.php'), 'fsm'
+        );
+
     }
 
     /**
@@ -111,6 +119,7 @@ class FrancoServiceProvider extends ServiceProvider
 
         //Publishing and overwriting app folders
         $this->publishes([
+            __DIR__ . '/../app/Listeners' => app_path('Listeners'),
             __DIR__ . '/../app/Models' => app_path('Models'),
             __DIR__ . '/../app/Policies' => app_path('Policies'),
             __DIR__ . '/../app/Services' => app_path('Services'),
