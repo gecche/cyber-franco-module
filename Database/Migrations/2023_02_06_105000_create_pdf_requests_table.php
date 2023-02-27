@@ -27,7 +27,7 @@ return new class extends Migration
                 'created','verification_expired','in_progress',
                 'done','failed','rejected','expired'
             ])->nullable();
-            $table->json('status_history')->default("[]");
+            $table->json('status_history')->nullable();
             $table->string('filename')->nullable();
             $table->boolean('verified')->default(0);
             $table->boolean('active')->default(1);

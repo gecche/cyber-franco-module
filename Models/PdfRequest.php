@@ -39,10 +39,11 @@ class PdfRequest extends Model
         'level',
         'attributes',
         'status',
-        'history',
+        'status_history',
         'filename',
         'verified',
         'active',
+        'backpack',
     ];
 
     public $appends = [
@@ -150,7 +151,7 @@ class PdfRequest extends Model
 
     public static function optionArray($type = null)
     {
-        return Config::get('pdf-request.sources',[]);
+        return Config::get('pdf_request.sources',[]);
     }
 
     public static function levelArray($type = null)
