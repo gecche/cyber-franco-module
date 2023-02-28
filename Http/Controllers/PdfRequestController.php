@@ -44,25 +44,40 @@ class PdfRequestController extends Controller
 
     //Il token è un verification token temporaneo (unica route dove passa)
     //hash è l'hash generato dall'uuid della richiesta
-    public function verify(Request $request, $token, $hash)
+    public function verifyPost(Request $request, $token, $hash)
     {
-        $pdfRequest = $this->checkVerification($token,$hash,'Accept');
+        $pdfRequest = $this->checkVerification($token,$hash,'Accept',true);
         $pdfRequest->makeTransitionAndSave('in_progress',["Verification e-mail done"]);
         return "Verification e-mail done";
     }
 
-    public function reject(Request $request, $token, $hash)
+    public function rejectPost(Request $request, $token, $hash)
     {
-        $pdfRequest = $this->checkVerification($token,$hash,'Reject');
+        $pdfRequest = $this->checkVerification($token,$hash,'Reject',true);
         $pdfRequest->makeTransitionAndSave('rejected',["Verification e-mail rejected"]);
         return "PDF Request rejected";
+    }
+
+    //Il token è un verification token temporaneo (unica route dove passa)
+    //hash è l'hash generato dall'uuid della richiesta
+    public function verify(Request $request, $token, $hash)
+    {
+        $pdfRequest = $this->checkVerification($token,$hash,'Accept',false);
+
+        return view('franco::verify-pdf-request',compact('pdfRequest'));
+    }
+
+    public function reject(Request $request, $token, $hash)
+    {
+        $pdfRequest = $this->checkVerification($token,$hash,'Reject',false);
+        return view('franco::reject-pdf-request',compact('pdfRequest'));
     }
 
 
     /*
      * @return App\Models\PdfRequest
      */
-    protected function checkVerification($token, $hash, $type) {
+    protected function checkVerification($token, $hash, $type, $delete = false) {
         $verification = PdfRequestVerification::findFromToken($token);
         $prefixMsg = $type . ' PDF Request::: ';
         if (!$verification) {
@@ -88,8 +103,10 @@ class PdfRequestController extends Controller
             Log::info($prefixMsg."Hash UUID does not match (HASH --> PDFHASH): " . $hash . '-->' . $pdfRequest->getHash());
             abort(404);
         }
-        //TUTTO OK: CANCELLO LA VERIFICATION E RITORNO LA PDF REQUEST
-        //$verification->delete();
+        if ($delete) {
+            //TUTTO OK: CANCELLO LA VERIFICATION E RITORNO LA PDF REQUEST
+            $verification->delete();
+        }
         return $pdfRequest;
 
     }

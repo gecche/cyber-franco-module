@@ -30,6 +30,10 @@ Route::middleware(['validate-api-franco'])->name('pdf-request.')
             ->name('verify');
         Route::get('reject/{token}/{hash}', [PdfRequestController::class, 'reject'])
             ->name('reject');
+        Route::post('verify/{token}/{hash}', [PdfRequestController::class, 'verifyPost'])
+            ->name('verify-post');
+        Route::post('reject/{token}/{hash}', [PdfRequestController::class, 'rejectPost'])
+            ->name('reject-post');
 
         Route::get('generate/{source}', [PdfRequestController::class, 'generate'])
             ->where('source', join("|", array_keys(config('pdf-request.sources', []))))

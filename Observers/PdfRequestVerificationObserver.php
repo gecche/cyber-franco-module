@@ -15,7 +15,7 @@ class PdfRequestVerificationObserver
      */
     public function created(PdfRequestVerification $pdfRequestVerification)
     {
-        $pdfRequestVerification->notify(new NewPdfRequestEmailToken($pdfRequestVerification));
+//        $pdfRequestVerification->notify(new NewPdfRequestEmailToken($pdfRequestVerification));
     }
 
     /**
@@ -26,7 +26,7 @@ class PdfRequestVerificationObserver
      */
     public function updated(PdfRequestVerification $pdfRequestVerification)
     {
-        $pdfRequestVerification->notify(new NewPdfRequestEmailToken($pdfRequestVerification));
+//        $pdfRequestVerification->notify(new NewPdfRequestEmailToken($pdfRequestVerification));
     }
 
 }

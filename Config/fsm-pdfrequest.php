@@ -64,6 +64,7 @@ return [
         'pdf_request' => [
 
             'groups' => [
+                'deletable' => "The PDF Request can be deleted",
                 /*
                     groupcode => description|null
                  */
@@ -71,17 +72,17 @@ return [
             'states' => [
                 'created' => [
                     'description' => "PDF Request created",
-                    'groups' => [],
+                    'groups' => ['deletable'],
                     'final' => false,
                 ],
                 'in_verification' => [
                     'description' => "E-mail to be verified",
-                    'groups' => [],
+                    'groups' => ['deletable'],
                     'final' => false,
                 ],
                 'verification_expired' => [
                     'description' => "Verification E-mail expired",
-                    'groups' => [],
+                    'groups' => ['deletable'],
                     'final' => false,
                 ],
                 'in_progress' => [
@@ -97,7 +98,7 @@ return [
                 ],
                 'failed' => [
                     'description' => "There has been an error while processing the PDF Request",
-                    'groups' => [],
+                    'groups' => ['deletable'],
                     'final' => false,
                 ],
                 'rejected' => [
@@ -107,7 +108,7 @@ return [
                 ],
                 'expired' => [
                     'description' => "The PDF Request is expired",
-                    'groups' => [],
+                    'groups' => ['deletable'],
                     'final' => true,
                 ],
 
