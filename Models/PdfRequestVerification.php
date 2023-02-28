@@ -49,4 +49,11 @@ class PdfRequestVerification extends Model
         $this->token = $this->makeToken();
         $this->save();
     }
+
+    /*
+     * @return static|null
+     */
+    public static function findFromToken($token) {
+        return static::where('token',$token)->first();
+    }
 }

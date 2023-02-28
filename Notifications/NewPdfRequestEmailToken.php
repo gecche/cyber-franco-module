@@ -18,7 +18,7 @@ class NewPdfRequestEmailToken extends Notification
     use Queueable;
 
     private $token;
-    protected $item;
+    protected $pdfRequest;
 
     private $ip;
     private $ua;
@@ -31,7 +31,7 @@ class NewPdfRequestEmailToken extends Notification
     public function __construct($pdfRequestVerification)
     {
         $this->token = $pdfRequestVerification->token;
-        $this->item = $pdfRequestVerification->pdfRequest->item;
+        $this->pdfRequest = $pdfRequestVerification->pdfRequest;
 
         $this->ip = request()->ip();
         $this->ua = request()->userAgent();
@@ -40,7 +40,7 @@ class NewPdfRequestEmailToken extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -51,7 +51,7 @@ class NewPdfRequestEmailToken extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -67,21 +67,42 @@ class NewPdfRequestEmailToken extends Notification
         if ($trackingPixel) {
             $markdownData['trackingPixel'] = $trackingPixel;
         }
+
+        $commonActionRoutesParameters = [
+            'token' => $this->token,
+            'hash' => $this->pdfRequest->getHash()
+        ];
+        $verifyUrl = route('pdf-request.verify', $commonActionRoutesParameters);
+        $rejectUrl = route('pdf-request.reject', $commonActionRoutesParameters);
+
+
+        $verificationExpirationDeadline = $this->pdfRequest->getVerificationExpirationTime();
+        if ($verificationExpirationDeadline) {
+            $noticeLine = Lang::get('franco::notification.verify-pdf-request.notice',
+                ['time' => $verificationExpirationDeadline->toDateTimeString()]);
+        } else {
+            $noticeLine = '';
+        }
         return (new MailMessage)
-            ->subject(Lang::get('franco::notification.verify-pdf-request.subject',['item' => $this->item]))
+            ->subject(Lang::get('franco::notification.verify-pdf-request.subject', ['item' => $this->pdfRequest->item]))
             ->line(Lang::get('franco::notification.verify-pdf-request.line_1'))
-            ->line(new HtmlString('<div class="info-block"><p>'. $this->token .'</p></div>'))
+//            ->line(new HtmlString('<div class="info-block"><p>'. $this->token .'</p></div>'))
+            ->action(Lang::get('franco::notification.verify-pdf-request.verify-button'), $verifyUrl)
             ->line(Lang::get('franco::notification.verify-pdf-request.line_2'))
             ->line(new HtmlString('<br>'))
-            ->line('This request was sent from '. $this->getIp() .' using '. $this->getBrowsers($this->ua) .' on '. $this->getOs($this->ua) .". If you didnt ask for it, you can safely ignore this message: no data about your email will be shared with anyone.")
+            ->line($noticeLine)
+            ->line(new HtmlString('<br>'))
+            ->line('This request was sent from ' . $this->getIp() . ' using ' . $this->getBrowsers($this->ua) . ' on ' . $this->getOs($this->ua) . ". If you didnt ask for it, you can safely ignore this message: no data about your email will be shared with anyone.")
             ->line(new HtmlString(Lang::get('franco::notification.verify-pdf-request.contacts')))
+            ->line(new HtmlString(Lang::get('franco::notification.verify-pdf-request.reject-line', ['reject_url' => $rejectUrl])))
+            ->line(new HtmlString('<br>'))
             ->markdown("notifications::email", $markdownData);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -91,12 +112,13 @@ class NewPdfRequestEmailToken extends Notification
         ];
     }
 
-    public function getIp(){
-        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
-            if (array_key_exists($key, $_SERVER) === true){
-                foreach (explode(',', $_SERVER[$key]) as $ip){
+    public function getIp()
+    {
+        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key) {
+            if (array_key_exists($key, $_SERVER) === true) {
+                foreach (explode(',', $_SERVER[$key]) as $ip) {
                     $ip = trim($ip); // just to be safe
-                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) {
                         return $ip;
                     }
                 }
@@ -134,63 +156,65 @@ class NewPdfRequestEmailToken extends Notification
 //        return ($reseller && $reseller->footer) ? $reseller->footer : null;
     }
 
-    public static function getOs($user_agent){
+    public static function getOs($user_agent)
+    {
         $os_platform = "Unknown OS Platform";
         $os_array = array(
-            '/windows nt 13/i'  => 'Windows 11',
-            '/windows nt 10/i'  => 'Windows 10',
-            '/windows nt 6.3/i'  => 'Windows 8.1',
-            '/windows nt 6.2/i'  => 'Windows 8',
-            '/windows nt 6.1/i'  => 'Windows 7',
-            '/windows nt 6.0/i'  => 'Windows Vista',
-            '/windows nt 5.2/i'  => 'Windows Server 2003/XP x64',
-            '/windows nt 5.1/i'  => 'Windows XP',
-            '/windows xp/i'  => 'Windows XP',
-            '/windows nt 5.0/i'  => 'Windows 2000',
-            '/windows me/i'  => 'Windows ME',
-            '/win98/i'  => 'Windows 98',
-            '/win95/i'  => 'Windows 95',
-            '/win16/i'  => 'Windows 3.11',
+            '/windows nt 13/i' => 'Windows 11',
+            '/windows nt 10/i' => 'Windows 10',
+            '/windows nt 6.3/i' => 'Windows 8.1',
+            '/windows nt 6.2/i' => 'Windows 8',
+            '/windows nt 6.1/i' => 'Windows 7',
+            '/windows nt 6.0/i' => 'Windows Vista',
+            '/windows nt 5.2/i' => 'Windows Server 2003/XP x64',
+            '/windows nt 5.1/i' => 'Windows XP',
+            '/windows xp/i' => 'Windows XP',
+            '/windows nt 5.0/i' => 'Windows 2000',
+            '/windows me/i' => 'Windows ME',
+            '/win98/i' => 'Windows 98',
+            '/win95/i' => 'Windows 95',
+            '/win16/i' => 'Windows 3.11',
             '/macintosh|mac os x/i' => 'Mac OS X',
-            '/mac_powerpc/i'  => 'Mac OS 9',
-            '/linux/i'  => 'Linux',
-            '/ubuntu/i'  => 'Ubuntu',
-            '/iphone/i'  => 'iPhone',
-            '/ipod/i'  => 'iPod',
-            '/ipad/i'  => 'iPad',
-            '/android/i'  => 'Android',
-            '/blackberry/i'  => 'BlackBerry',
-            '/webos/i'  => 'Mobile',
+            '/mac_powerpc/i' => 'Mac OS 9',
+            '/linux/i' => 'Linux',
+            '/ubuntu/i' => 'Ubuntu',
+            '/iphone/i' => 'iPhone',
+            '/ipod/i' => 'iPod',
+            '/ipad/i' => 'iPad',
+            '/android/i' => 'Android',
+            '/blackberry/i' => 'BlackBerry',
+            '/webos/i' => 'Mobile',
         );
 
-        foreach ($os_array as $regex => $value){
-            if(preg_match($regex, $user_agent)){
+        foreach ($os_array as $regex => $value) {
+            if (preg_match($regex, $user_agent)) {
                 $os_platform = $value;
             }
         }
         return $os_platform;
     }
 
-    public static function getBrowsers($user_agent){
+    public static function getBrowsers($user_agent)
+    {
         $browser = "Unknown Browser";
 
         $browser_array = array(
-            '/msie/i'  => 'Internet Explorer',
-            '/Trident/i'  => 'Internet Explorer',
-            '/firefox/i'  => 'Firefox',
-            '/safari/i'  => 'Safari',
-            '/chrome/i'  => 'Chrome',
-            '/edge/i'  => 'Edge',
-            '/opera/i'  => 'Opera',
-            '/netscape/'  => 'Netscape',
-            '/maxthon/i'  => 'Maxthon',
-            '/knoqueror/i'  => 'Konqueror',
-            '/ubrowser/i'  => 'UC Browser',
-            '/mobile/i'  => 'Safari Browser',
+            '/msie/i' => 'Internet Explorer',
+            '/Trident/i' => 'Internet Explorer',
+            '/firefox/i' => 'Firefox',
+            '/safari/i' => 'Safari',
+            '/chrome/i' => 'Chrome',
+            '/edge/i' => 'Edge',
+            '/opera/i' => 'Opera',
+            '/netscape/' => 'Netscape',
+            '/maxthon/i' => 'Maxthon',
+            '/knoqueror/i' => 'Konqueror',
+            '/ubrowser/i' => 'UC Browser',
+            '/mobile/i' => 'Safari Browser',
         );
 
-        foreach($browser_array as $regex => $value){
-            if(preg_match($regex, $user_agent)){
+        foreach ($browser_array as $regex => $value) {
+            if (preg_match($regex, $user_agent)) {
                 $browser = $value;
             }
         }

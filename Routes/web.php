@@ -31,17 +31,21 @@ Route::middleware(['validate-api-franco'])->name('pdf-request.')
 
         //Il token è un verification token temporaneo (unica route dove passa)
         //hash è l'hash generato dall'uuid della richiesta
-        Route::get('verify/{token}/{hash}', [PdfRequestController::class, 'verify']);
-        Route::get('reject/{token}/{hash}', [PdfRequestController::class, 'reject']);
+        Route::get('verify/{token}/{hash}', [PdfRequestController::class, 'verify'])
+            ->name('verify');
+        Route::get('reject/{token}/{hash}', [PdfRequestController::class, 'reject'])
+            ->name('reject');
 
         Route::group(['middleware' => ['pdf-uuid']], function () {
 
             //hash è l'uuid della richiesta
             //hash è l'hash generato dall'uuid della richiesta
             //da mettere in stand by
-            Route::get('resend-verification/{uuid}/{hash}', [PdfRequestController::class, 'resendVerification']);
+            Route::get('resend-verification/{uuid}/{hash}', [PdfRequestController::class, 'resendVerification'])
+                ->name('resend-verification');
 
-            Route::get('get-status/{uuid}/{hash}', [PdfRequestController::class, 'getStatus']);
+            Route::get('get-status/{uuid}/{hash}', [PdfRequestController::class, 'getStatus'])
+                ->name('get-status');
         });
 
     });

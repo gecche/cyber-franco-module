@@ -2,6 +2,7 @@
 
 namespace Modules\CyberFranco\Listeners;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Gecche\FSM\Events\StatusTransitionDone;
 use Modules\CyberFranco\Notifications\NewPdfRequestEmailToken;
@@ -42,9 +43,17 @@ class HandlePdfRequestStatusTransition
 
             case $rootState:
                 if ($this->model->needsVerification()) {
-                    $verification = $this->model->generateVerification();
-                    $verification->notify(new NewPdfRequestEmailToken($verification));
+                    $this->model->makeTransitionAndSave('in_verification');
+                } else {
+                    $this->model->makeTransitionAndSave('in_process',["No need for verification: " . $this->model->source ." PDF request"]);
                 }
+                break;
+            case 'in_verification':
+                $verification = $this->model->generateVerification();
+                $verification->notify(new NewPdfRequestEmailToken($verification));
+            case 'in_process':
+                //START PDF REQUEST JOB
+                Log::info("REQUEST PDF JOB STARTED");
                 break;
             default:
                 break;

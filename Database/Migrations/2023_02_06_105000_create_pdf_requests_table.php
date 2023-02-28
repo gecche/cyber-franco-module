@@ -23,10 +23,7 @@ return new class extends Migration
             $table->string('item');
             $table->tinyInteger('level');
             $table->json('attributes')->nullable();
-            $table->enum('status',[
-                'created','verification_expired','in_progress',
-                'done','failed','rejected','expired'
-            ])->nullable();
+            $table->string('status')->nullable();
             $table->json('status_history')->nullable();
             $table->string('filename')->nullable();
             $table->boolean('verified')->default(0);
