@@ -70,38 +70,43 @@ return [
             ],
             'states' => [
                 'created' => [
-                    'description' => "",
+                    'description' => "PDF Request created",
+                    'groups' => [],
+                    'final' => false,
+                ],
+                'in_verification' => [
+                    'description' => "E-mail to be verified",
                     'groups' => [],
                     'final' => false,
                 ],
                 'verification_expired' => [
-                    'description' => "",
+                    'description' => "Verification E-mail expired",
                     'groups' => [],
                     'final' => false,
                 ],
                 'in_progress' => [
-                    'description' => "",
+                    'description' => "The PDF Request is in progress",
                     'groups' => [],
                     'final' => false,
                 ],
 
                 'done' => [
-                    'description' => "",
+                    'description' => "The PDF Request has been successfully elaborated",
                     'groups' => [],
                     'final' => false,
                 ],
                 'failed' => [
-                    'description' => "",
+                    'description' => "There has been an error while processing the PDF Request",
                     'groups' => [],
                     'final' => false,
                 ],
                 'rejected' => [
-                    'description' => "",
+                    'description' => "The final user has declined the PDF request",
                     'groups' => [],
                     'final' => false,
                 ],
                 'expired' => [
-                    'description' => "",
+                    'description' => "The PDF Request is expired",
                     'groups' => [],
                     'final' => true,
                 ],
@@ -122,6 +127,10 @@ return [
                     code => [ <CODES> ]
                 */
                 'created' => [
+                    'in_verification',
+                    'in_progress',
+                ],
+                'in_verification' => [
                     'verification_expired',
                     'in_progress',
                     'rejected',

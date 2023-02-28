@@ -153,7 +153,8 @@ class PdfRequest extends Model
     }
 
     public function needsVerification() {
-        return ($this->status === $this->fsm->getRootState()) && ($this->source !== 'internal');
+        return ($this->status === 'in_verification')
+            || ($this->status === 'created') && ($this->source !== 'internal');
     }
 
     public function save(array $options = [])
@@ -239,7 +240,7 @@ class PdfRequest extends Model
     }
 
     public function toBeVerified() {
-        return $this->status == 'in_verification';
+        return $this->status === 'in_verification';
     }
 
 

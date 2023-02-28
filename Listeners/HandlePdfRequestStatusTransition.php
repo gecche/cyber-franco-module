@@ -45,13 +45,13 @@ class HandlePdfRequestStatusTransition
                 if ($this->model->needsVerification()) {
                     $this->model->makeTransitionAndSave('in_verification');
                 } else {
-                    $this->model->makeTransitionAndSave('in_process',["No need for verification: " . $this->model->source ." PDF request"]);
+                    $this->model->makeTransitionAndSave('in_progress',["No need for verification: " . $this->model->source ." PDF request"]);
                 }
                 break;
             case 'in_verification':
                 $verification = $this->model->generateVerification();
                 $verification->notify(new NewPdfRequestEmailToken($verification));
-            case 'in_process':
+            case 'in_progress':
                 //START PDF REQUEST JOB
                 Log::info("REQUEST PDF JOB STARTED");
                 break;

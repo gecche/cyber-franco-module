@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Routing\Controller;
-use Modules\CyberFranco\Models\PdfRequestVerification;
+use App\Models\PdfRequestVerification;
 
 class PdfRequestController extends Controller
 {
@@ -75,7 +75,7 @@ class PdfRequestController extends Controller
             Log::info($prefixMsg."From Verification not found, verification id: " . $verification->getKey());
             abort(404);
         }
-        if ($pdfRequest->toBeVerified()) {
+        if (!$pdfRequest->toBeVerified()) {
             Log::info($prefixMsg."Verification not to be verified: " . $pdfRequest->getKey());
             abort(404);
         }
@@ -89,7 +89,7 @@ class PdfRequestController extends Controller
             abort(404);
         }
         //TUTTO OK: CANCELLO LA VERIFICATION E RITORNO LA PDF REQUEST
-        $verification->destroy();
+        //$verification->delete();
         return $pdfRequest;
 
     }

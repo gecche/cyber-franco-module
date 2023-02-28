@@ -16,7 +16,6 @@ use App\Http\Controllers\PdfRequestController;
 Route::middleware(['validate-api-franco'])->name('pdf-request.')
     ->prefix('pdf-request')
     ->group(function () {
-
         //  route per la generazione dei pdf da fonti note (lexy)
         //In post:
         //token (di lexy) da controllare anche con la source e la origin della request
@@ -25,16 +24,17 @@ Route::middleware(['validate-api-franco'])->name('pdf-request.')
         //level
         //attributes (eventuali info agiguntive sul pdf da generare)
         //da rimandare anche altre cose di billing e altro che ci diranno
-        Route::any('generate/{source}', [PdfRequestController::class, 'generate'])
-            ->where('source', join("|", array_keys(config('pdf-request.sources', []))))
-            ->name('generate');
-
         //Il token è un verification token temporaneo (unica route dove passa)
         //hash è l'hash generato dall'uuid della richiesta
         Route::get('verify/{token}/{hash}', [PdfRequestController::class, 'verify'])
             ->name('verify');
         Route::get('reject/{token}/{hash}', [PdfRequestController::class, 'reject'])
             ->name('reject');
+
+        Route::get('generate/{source}', [PdfRequestController::class, 'generate'])
+            ->where('source', join("|", array_keys(config('pdf-request.sources', []))))
+            ->name('generate');
+
 
         Route::group(['middleware' => ['pdf-uuid']], function () {
 

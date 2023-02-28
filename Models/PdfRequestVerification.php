@@ -36,7 +36,7 @@ class PdfRequestVerification extends Model
 
     public function pdfRequest(): BelongsTo
     {
-        return $this->BelongsTo(PdfRequest::class);
+        return $this->BelongsTo(\App\Models\PdfRequest::class);
     }
 
     public static function makeToken()
