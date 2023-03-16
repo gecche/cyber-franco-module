@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Services\Cybercheck\CyberCheckApi;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Exception;
 use Illuminate\Database\Eloquent\Casts\Attribute;

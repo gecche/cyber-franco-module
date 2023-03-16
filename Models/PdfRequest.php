@@ -2,7 +2,6 @@
 
 namespace Modules\CyberFranco\Models;
 
-use App\Services\Cybercheck\CyberCheckApi;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Carbon\Carbon;
 use Exception;
